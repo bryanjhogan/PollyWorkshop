@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Polly;
 
 namespace WeatherService
 {
@@ -18,6 +19,11 @@ namespace WeatherService
 
         public void ConfigureServices(IServiceCollection services)
         {
+            IAsyncPolicy<HttpResponseMessage> retryPolicy =
+                Policy.HandleResult<HttpResponseMessage>(r => !r.IsSuccessStatusCode)
+                    .RetryAsync(3);
+            services.AddSingleton<IAsyncPolicy<HttpResponseMessage>>(retryPolicy);
+
             HttpClient httpClient = new HttpClient()
             {
                 BaseAddress = new Uri("http://localhost:6001/") // this is the address of the temperature service
