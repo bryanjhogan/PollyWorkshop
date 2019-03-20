@@ -13,6 +13,12 @@ namespace TemperatureService.Controllers
         [HttpGet("{locationId}")]
         public ActionResult Get(int locationId)
         {
+            var token = Request.Headers["Host"];
+            if (token != "localhost:6001")
+            {
+                return Unauthorized();
+            }
+
             _counter++;
 
             if (_counter % 4 == 0) // only one of out four requests will succeed

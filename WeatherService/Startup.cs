@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using System.Net.Http;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -21,7 +22,17 @@ namespace WeatherService
         {
             IAsyncPolicy<HttpResponseMessage> retryPolicy =
                 Policy.HandleResult<HttpResponseMessage>(r => !r.IsSuccessStatusCode)
-                    .WaitAndRetryAsync(3, retryCount => TimeSpan.FromSeconds(retryCount));
+                    .RetryAsync(3, (response, retryCount) =>
+                    {
+                        if (response.Result.StatusCode == HttpStatusCode.Unauthorized)
+                        {
+                            Console.WriteLine("Retrying is not going to help here! I wish I had .NET Core 2.1 and HttpClientFactory.");
+                        }
+                        else if (response.Result.StatusCode == HttpStatusCode.Forbidden)
+                        {
+                            Console.WriteLine("Do something else.");
+                        }
+                    });
 
             services.AddSingleton<IAsyncPolicy<HttpResponseMessage>>(retryPolicy);
 
