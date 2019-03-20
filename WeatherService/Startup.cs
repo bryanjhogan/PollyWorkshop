@@ -21,7 +21,8 @@ namespace WeatherService
         {
             IAsyncPolicy<HttpResponseMessage> retryPolicy =
                 Policy.HandleResult<HttpResponseMessage>(r => !r.IsSuccessStatusCode)
-                    .RetryAsync(3);
+                    .WaitAndRetryAsync(3, retryCount => TimeSpan.FromSeconds(retryCount));
+
             services.AddSingleton<IAsyncPolicy<HttpResponseMessage>>(retryPolicy);
 
             HttpClient httpClient = new HttpClient()
