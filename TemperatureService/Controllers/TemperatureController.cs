@@ -14,7 +14,7 @@ namespace TemperatureService.Controllers
         public ActionResult Get(int locationId)
         {
             var token = Request.Headers["Host"];
-            if (token != "localhost:6001")
+            if (token != "SomeSecret")
             {
                 return Unauthorized();
             }
