@@ -13,7 +13,7 @@ namespace TemperatureService.Controllers
         [HttpGet("{locationId}")]
         public ActionResult Get(int locationId)
         {
-            var token = Request.Headers["Host"];
+            var token = Request.Headers["Token"];
             if (token != "SomeSecret")
             {
                 return Unauthorized();

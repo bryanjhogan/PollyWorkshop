@@ -28,7 +28,7 @@ namespace WeatherService
                         {
                             Console.WriteLine("Retrying is not going to help here! I wish I had .NET Core 2.1 and HttpClientFactory.");
                         }
-                        else if (response.Result.StatusCode == HttpStatusCode.Forbidden)
+                        else
                         {
                             Console.WriteLine("Do something else.");
                         }
