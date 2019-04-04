@@ -13,19 +13,17 @@ namespace TemperatureService.Controllers
         [HttpGet("{locationId}")]
         public ActionResult Get(int locationId)
         {
-            var token = Request.Headers["Token"];
-            if (token != "SomeSecret")
-            {
-                return Unauthorized();
-            }
-
             _counter++;
 
-            if (_counter % 4 == 0) // only one of out four requests will succeed
+            var token = Request.Headers["Token"];
+
+            if ((_counter == 1 && token == "OldPassword") || (_counter >= 2 && token == "NewPassword"))
             {
                 return Ok(randomTemperature.Next(0, 120));
             }
-            return StatusCode((int)HttpStatusCode.InternalServerError, "Something went wrong when getting the temperature.");
+            return Unauthorized();
+
+
         }
     }
 }
