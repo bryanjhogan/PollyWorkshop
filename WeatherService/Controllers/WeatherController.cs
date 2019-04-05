@@ -10,26 +10,19 @@ namespace WeatherService.Controllers
     public class WeatherController : ControllerBase
     {
         private readonly HttpClient _httpClient;
-        private readonly IAsyncPolicy<HttpResponseMessage> _retryPolicy;
+        private readonly IAsyncPolicy<HttpResponseMessage> _resiliencePolicy;
 
-        public WeatherController(HttpClient httpClient, IAsyncPolicy<HttpResponseMessage> retryPolicy)
+        public WeatherController(HttpClient httpClient, IAsyncPolicy<HttpResponseMessage> resiliencePolicy)
         {
             _httpClient = httpClient;
-            _retryPolicy = retryPolicy;
+            _resiliencePolicy = resiliencePolicy;
         }
 
         [HttpGet("{locationId}")]
         public async Task<ActionResult> Get(int locationId)
         {
-            HttpResponseMessage httpResponseMessage = await _retryPolicy.ExecuteAsync(context =>
-            {
-                var requestMessage = new HttpRequestMessage(HttpMethod.Get, $"temperature/{locationId}");
-                requestMessage.Headers.Add("Token", $"{context["TheSecret"]}");
-                return _httpClient.SendAsync(requestMessage);
-            }, new Dictionary<string, object>
-            {
-                {"TheSecret", "OldPassword"},
-            });
+            HttpResponseMessage httpResponseMessage = await _resiliencePolicy.ExecuteAsync(() => 
+                _httpClient.GetAsync($"temperature/{locationId}"));
 
             if (httpResponseMessage.IsSuccessStatusCode)
             {

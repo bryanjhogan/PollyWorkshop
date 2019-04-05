@@ -15,15 +15,11 @@ namespace TemperatureService.Controllers
         {
             _counter++;
 
-            var token = Request.Headers["Token"];
-
-            if ((_counter == 1 && token == "OldPassword") || (_counter >= 2 && token == "NewPassword"))
+            if (_counter % 4 == 0) // only one of out four requests will succeed
             {
                 return Ok(randomTemperature.Next(0, 120));
             }
-            return Unauthorized();
-
-
+            return StatusCode((int)HttpStatusCode.InternalServerError, "Something went wrong when getting the temperature.");
         }
     }
 }
