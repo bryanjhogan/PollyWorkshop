@@ -22,17 +22,7 @@ namespace WeatherService
         {
             IAsyncPolicy<HttpResponseMessage> retryPolicy =
                 Policy.HandleResult<HttpResponseMessage>(r => !r.IsSuccessStatusCode)
-                    .RetryAsync(3, (response, retryCount) =>
-                    {
-                        if (response.Result.StatusCode == HttpStatusCode.Unauthorized)
-                        {
-                            Console.WriteLine("Retrying is not going to help here! I wish I had .NET Core 2.1 and HttpClientFactory.");
-                        }
-                        else
-                        {
-                            Console.WriteLine("Do something else.");
-                        }
-                    });
+                    .RetryAsync(3);
 
             services.AddSingleton<IAsyncPolicy<HttpResponseMessage>>(retryPolicy);
 
