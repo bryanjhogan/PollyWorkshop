@@ -22,12 +22,11 @@ namespace WeatherService
         {
             IAsyncPolicy<HttpResponseMessage> retryPolicy =
                 Policy.HandleResult<HttpResponseMessage>(r => !r.IsSuccessStatusCode)
-                    .RetryAsync(3, (response, retryCount, context) =>
+                    .RetryAsync(3, (response, retryCount) =>
                     {
                         if (response.Result.StatusCode == HttpStatusCode.Unauthorized)
                         {
-                            // you should have some fancy code here to get the new token
-                            context["TheSecret"] = "NewPassword";
+                            Console.WriteLine("Retrying is not going to help here! I wish I had .NET Core 2.1 and HttpClientFactory.");
                         }
                         else
                         {
